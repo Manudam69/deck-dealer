@@ -52,6 +52,10 @@
               ],
               "outputHashing": "all"
             },
+            "github-pages": {
+              "outputMode": "static",
+              "outputHashing": "all"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
