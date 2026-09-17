@@ -18,4 +18,5 @@ export class PlayingCardComponent {
 
   readonly imgWidth = computed(() => (this.size() === 'sm' ? 48 : 288));
   readonly imgHeight = computed(() => (this.size() === 'sm' ? 64 : 384));
+  readonly imageSrc = computed(() => this.card().image.replace(/^\//, ''));
 }

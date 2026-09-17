@@ -17,7 +17,7 @@
       </div>
     } @else {
       <img
-        [ngSrc]="card.image"
+        [ngSrc]="imageSrc()"
         [width]="imgWidth()"
         [height]="imgHeight()"
         [priority]="size() === 'lg'"
