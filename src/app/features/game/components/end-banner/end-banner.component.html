@@ -1,6 +1,19 @@
-@if (game.isFinished()) {
-  <div class="fixed inset-0 z-40 flex items-center justify-center bg-ink/35 p-4 backdrop-blur-[2px]" role="status" aria-live="polite">
-    <div class="w-[min(90vw,22rem)] rounded-3xl border-2 border-card-border bg-card-surface p-6 text-center shadow-xl">
+@if (showBanner()) {
+  <div
+    class="fixed inset-0 z-40 flex items-center justify-center bg-ink/35 p-4 backdrop-blur-[2px]"
+    role="status"
+    aria-live="polite"
+    (click)="hide()"
+  >
+    <div
+      class="relative w-[min(90vw,22rem)] rounded-3xl border-2 border-card-border bg-card-surface p-6 text-center shadow-xl"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="hide()"
+      tabindex="-1"
+    >
+      <div class="absolute right-2 top-2">
+        <app-icon-button icon="x" label="Cerrar aviso" (clicked)="hide()" />
+      </div>
       <p class="m-0 mb-2 font-heading text-2xl font-bold text-mexican-pink">¡Se acabó la baraja!</p>
       <p class="m-0 mb-5 text-ink-muted">Todas las cartas han salido.</p>
       <button

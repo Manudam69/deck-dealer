@@ -6,10 +6,10 @@ export interface GameSettings {
 
 export const DEFAULT_SETTINGS: GameSettings = {
   deckId: 'loteria-mexicana',
-  speedMs: 4000,
+  speedMs: 2000,
   voiceEnabled: true,
 };
 
-export const MIN_SPEED_MS = 1000;
+export const MIN_SPEED_MS = 500;
 export const MAX_SPEED_MS = 10000;
-export const SPEED_STEP_MS = 500;
+export const SPEED_STEP_MS = 250;

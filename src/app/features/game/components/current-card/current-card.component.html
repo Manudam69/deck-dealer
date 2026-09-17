@@ -1,6 +1,14 @@
 <div class="flex w-full flex-col items-center justify-center gap-4 text-center" aria-live="polite" aria-atomic="true">
   @if (currentCard(); as card) {
-    <app-playing-card [card]="card" size="lg" />
+    <button
+      type="button"
+      class="cursor-pointer rounded-2xl border-none bg-transparent p-0 transition-transform duration-150 active:scale-[0.98] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber-accent"
+      [attr.aria-label]="toggleLabel()"
+      [attr.aria-disabled]="game.status() === 'finished' ? true : null"
+      (click)="toggle()"
+    >
+      <app-playing-card [card]="card" size="lg" />
+    </button>
     <p class="m-0 font-heading text-[clamp(1.75rem,6vw,2.5rem)] font-bold leading-none text-ink">
       {{ card.name }}
     </p>
@@ -9,12 +17,15 @@
     </p>
   } @else {
     <div class="flex flex-col items-center gap-4">
-      <div
-        class="flex aspect-[3/4] w-[min(70vw,18rem)] flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-card-border bg-cream-dark p-6 text-center"
+      <button
+        type="button"
+        class="flex aspect-[3/4] w-[min(70vw,18rem)] cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-card-border bg-cream-dark p-6 text-center transition-transform duration-150 active:scale-[0.98] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber-accent"
+        [attr.aria-label]="toggleLabel()"
+        (click)="toggle()"
       >
         <span class="flex size-16 items-center justify-center rounded-full bg-card-surface font-heading text-3xl font-bold text-mexican-pink">?</span>
-        <span class="font-heading text-xl font-semibold text-ink-muted">Pulsa «Iniciar» para comenzar</span>
-      </div>
+        <span class="font-heading text-xl font-semibold text-ink-muted">Pulsa para comenzar</span>
+      </button>
       <p class="m-0 text-base font-semibold text-ink-muted" aria-label="Cartas salidas">0 / {{ game.totalCount() }}</p>
     </div>
   }

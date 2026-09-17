@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { GameService } from '../../../../core/services/game.service';
+import { GameService, type GameStatus } from '../../../../core/services/game.service';
 import { PlayingCardComponent } from '../playing-card/playing-card.component';
 
 @Component({
@@ -13,4 +13,30 @@ import { PlayingCardComponent } from '../playing-card/playing-card.component';
 export class CurrentCardComponent {
   protected readonly game = inject(GameService);
   readonly currentCard = computed(() => this.game.currentCard());
+
+  readonly toggleLabel = computed(() => {
+    switch (this.game.status()) {
+      case 'running':
+        return 'Pausar';
+      case 'paused':
+        return 'Continuar';
+      case 'finished':
+        return 'Juego terminado';
+      default:
+        return 'Iniciar';
+    }
+  });
+
+  toggle(): void {
+    if (this.game.status() === 'running') {
+      this.game.pause();
+      return;
+    }
+
+    if (this.game.status() === 'finished') {
+      return;
+    }
+
+    this.game.startAuto();
+  }
 }

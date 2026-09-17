@@ -47,7 +47,7 @@ describe('SettingsService', () => {
 
   it('updates settings and clamps speed to the allowed range', () => {
     const service = configureService();
-    service.update({ speedMs: 500 });
+    service.update({ speedMs: 200 });
     expect(service.settings().speedMs).toBe(MIN_SPEED_MS);
 
     service.update({ speedMs: 50000 });
