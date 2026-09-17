@@ -1,0 +1,7 @@
+<div class="flex h-dvh flex-col overflow-hidden bg-linear-to-b from-cream to-white">
+  <app-card-history [cards]="game.history()" />
+  <app-current-card />
+  <app-game-controls (openSettings)="settingsOpen.set(true)" />
+  <app-settings-sheet [isOpen]="settingsOpen()" (close)="settingsOpen.set(false)" />
+  <app-end-banner />
+</div>

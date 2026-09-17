@@ -1,0 +1,10 @@
+<div
+  #container
+  class="flex items-center gap-2 overflow-x-auto bg-cream px-4 py-3 no-scrollbar min-h-20 border-b border-card-border"
+  role="region"
+  aria-label="Historial de cartas salidas"
+>
+  @for (card of cards(); track card.id) {
+    <app-playing-card [card]="card" size="sm" />
+  }
+</div>

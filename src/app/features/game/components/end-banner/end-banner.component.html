@@ -1,0 +1,15 @@
+@if (game.isFinished()) {
+  <div class="fixed inset-0 z-40 flex items-center justify-center bg-ink/35 p-4 backdrop-blur-[2px]" role="status" aria-live="polite">
+    <div class="w-[min(90vw,22rem)] rounded-3xl border-2 border-card-border bg-card-surface p-6 text-center shadow-xl">
+      <p class="m-0 mb-2 font-heading text-2xl font-bold text-mexican-pink">¡Se acabó la baraja!</p>
+      <p class="m-0 mb-5 text-ink-muted">Todas las cartas han salido.</p>
+      <button
+        type="button"
+        class="w-full rounded-xl border-none bg-mexican-pink px-4 py-3.5 font-heading text-lg font-bold text-white transition-colors hover:bg-mexican-pink-dark active:scale-[0.98]"
+        (click)="reshuffle()"
+      >
+        Mezclar de nuevo
+      </button>
+    </div>
+  </div>
+}

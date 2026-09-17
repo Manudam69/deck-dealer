@@ -1,0 +1,8 @@
+<button
+  type="button"
+  class="inline-flex items-center justify-center size-11 rounded-full border border-card-border bg-card-surface text-ink shadow-sm transition-colors duration-150 hover:bg-cream-dark active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mexican-pink"
+  [attr.aria-label]="label()"
+  (click)="clicked.emit()"
+>
+  <app-icon [name]="icon()" [size]="size()" />
+</button>

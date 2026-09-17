@@ -1,0 +1,15 @@
+<div class="flex flex-col items-center gap-4 p-4 safe-bottom">
+  <button
+    type="button"
+    class="w-full max-w-80 rounded-2xl border-none bg-mexican-pink px-6 py-4 font-heading text-xl font-bold text-white shadow-[0_10px_15px_-3px_rgb(190,18,60,0.3)] transition-colors duration-150 hover:bg-mexican-pink-dark active:scale-[0.98] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber-accent"
+    (click)="toggleAuto()"
+  >
+    {{ primaryLabel() }}
+  </button>
+
+  <div class="flex items-center justify-center gap-3" role="group" aria-label="Acciones secundarias">
+    <app-icon-button icon="skip-forward" label="Siguiente carta" (clicked)="drawNext()" />
+    <app-icon-button icon="shuffle" label="Mezclar y reiniciar" (clicked)="reshuffle()" />
+    <app-icon-button icon="settings" label="Ajustes" (clicked)="openSettings.emit()" />
+  </div>
+</div>
