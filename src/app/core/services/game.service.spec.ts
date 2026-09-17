@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { PLATFORM_ID } from '@angular/core';
+import { vi } from 'vitest';
 import { GameService } from './game.service';
 import { SettingsService } from './settings.service';
 import { SpeechService } from './speech.service';
@@ -91,6 +92,21 @@ describe('GameService', () => {
 
     expect(game.isFinished()).toBe(true);
     expect(game.status()).toBe('finished');
+  });
+
+  it('announces the last card and the end-of-deck message as a queue', () => {
+    const game = configureGame();
+    const speechService = TestBed.inject(SpeechService);
+    const announceQueueSpy = vi.spyOn(speechService, 'announceQueue');
+    const total = game.totalCount();
+
+    for (let i = 0; i < total; i++) {
+      game.drawNext();
+    }
+
+    const lastCard = game.currentCard()?.name;
+    expect(lastCard).toBeTruthy();
+    expect(announceQueueSpy).toHaveBeenCalledWith([lastCard, 'Se acabó la baraja']);
   });
 
   it('does not draw beyond the deck size', () => {

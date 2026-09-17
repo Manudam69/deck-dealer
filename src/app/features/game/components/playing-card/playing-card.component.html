@@ -18,9 +18,9 @@
     } @else {
       <img
         [ngSrc]="card.image"
-        fill
+        [width]="imgWidth()"
+        [height]="imgHeight()"
         [priority]="size() === 'lg'"
-        [sizes]="size() === 'lg' ? '100vw' : '48px'"
         [alt]="card.name"
         (error)="imageError.set(true)"
         class="h-full w-full object-contain"

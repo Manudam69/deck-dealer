@@ -104,7 +104,7 @@ export class GameService {
     if (this.isFinished()) {
       this.pause();
       if (this.settingsService.settings().voiceEnabled) {
-        this.speechService.announce('Se acabó la baraja');
+        this.speechService.announceQueue([next.name, 'Se acabó la baraja']);
       }
       return;
     }
@@ -126,9 +126,23 @@ export class GameService {
   private scheduleNext(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this.clearTimer();
+    const speed = this.settingsService.settings().speedMs;
     this.timerId = setTimeout(() => {
-      this.drawNext();
-    }, this.settingsService.settings().speedMs);
+      this.drawNextWhenReady();
+    }, speed);
+  }
+
+  private drawNextWhenReady(): void {
+    const voiceEnabled = this.settingsService.settings().voiceEnabled;
+    if (voiceEnabled && this.speechService.isSpeaking()) {
+      this.clearTimer();
+      this.timerId = setTimeout(() => {
+        this.drawNextWhenReady();
+      }, 250);
+      return;
+    }
+
+    this.drawNext();
   }
 
   private clearTimer(): void {
