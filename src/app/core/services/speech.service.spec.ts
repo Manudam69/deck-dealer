@@ -17,9 +17,11 @@ interface FakeUtterance {
 function createFakeSpeechSynthesis(): {
   synth: SpeechSynthesis;
   spokenTexts: string[];
+  spokenUtterances: FakeUtterance[];
   finishSpeaking: () => void;
 } {
   const spokenTexts: string[] = [];
+  const spokenUtterances: FakeUtterance[] = [];
   let currentUtterance: FakeUtterance | null = null;
 
   vi.stubGlobal(
@@ -55,6 +57,7 @@ function createFakeSpeechSynthesis(): {
     },
     speak: (utterance: FakeUtterance) => {
       spokenTexts.push(utterance.text);
+      spokenUtterances.push(utterance);
       currentUtterance = utterance;
       (synth as any).speaking = true;
       (synth as any).pending = false;
@@ -73,7 +76,7 @@ function createFakeSpeechSynthesis(): {
     }
   };
 
-  return { synth, spokenTexts, finishSpeaking };
+  return { synth, spokenTexts, spokenUtterances, finishSpeaking };
 }
 
 function createFakeDocument(synth: SpeechSynthesis): Document {
@@ -87,12 +90,14 @@ function createFakeDocument(synth: SpeechSynthesis): Document {
 describe('SpeechService', () => {
   let fakeSynth: SpeechSynthesis;
   let spokenTexts: string[];
+  let spokenUtterances: FakeUtterance[];
   let finishSpeaking: () => void;
 
   beforeEach(() => {
     const fake = createFakeSpeechSynthesis();
     fakeSynth = fake.synth;
     spokenTexts = fake.spokenTexts;
+    spokenUtterances = fake.spokenUtterances;
     finishSpeaking = fake.finishSpeaking;
 
     vi.useFakeTimers();
@@ -116,6 +121,33 @@ describe('SpeechService', () => {
     const service = configureService();
     service.announce('El Gallo');
     expect(spokenTexts).toEqual(['El Gallo']);
+  });
+
+  it('prefers a natural Mexican Spanish voice at a clearer pace', () => {
+    const genericSpanishVoice = {
+      lang: 'es-ES',
+      name: 'Spanish Standard',
+      default: false,
+      localService: false,
+      voiceURI: '',
+    } as SpeechSynthesisVoice;
+    const mexicanNaturalVoice = {
+      lang: 'es-MX',
+      name: 'Microsoft Dalia Online (Natural)',
+      default: false,
+      localService: false,
+      voiceURI: '',
+    } as SpeechSynthesisVoice;
+    vi.spyOn(fakeSynth, 'getVoices').mockReturnValue([
+      genericSpanishVoice,
+      mexicanNaturalVoice,
+    ]);
+
+    const service = configureService();
+    service.announce('El Gallo');
+
+    expect(spokenUtterances[0]?.voice).toBe(mexicanNaturalVoice);
+    expect(spokenUtterances[0]?.rate).toBe(0.9);
   });
 
   it('delays the next announcement if already speaking', () => {

@@ -3,6 +3,7 @@ import { Service, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 const SPEAK_DELAY_MS = 100;
+const NATURAL_VOICE_PATTERN = /natural|neural|online|enhanced|premium/i;
 
 @Service()
 export class SpeechService {
@@ -117,11 +118,12 @@ export class SpeechService {
   private createUtterance(text: string): SpeechSynthesisUtterance {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'es-MX';
-    utterance.rate = 1;
+    utterance.rate = 0.9;
     utterance.pitch = 1;
 
-    if (this.spanishVoices.length > 0) {
-      utterance.voice = this.spanishVoices[0];
+    const preferredVoice = this.spanishVoices[0];
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
     }
 
     return utterance;
@@ -142,6 +144,19 @@ export class SpeechService {
     if (!this.synth) return;
     this.spanishVoices = this.synth
       .getVoices()
-      .filter((voice) => voice.lang.toLowerCase().startsWith('es'));
+      .filter((voice) => voice.lang.toLowerCase().startsWith('es'))
+      .sort((first, second) => this.voiceScore(second) - this.voiceScore(first));
+  }
+
+  private voiceScore(voice: SpeechSynthesisVoice): number {
+    const language = voice.lang.toLowerCase();
+    const name = voice.name.toLowerCase();
+
+    return (
+      (language === 'es-mx' ? 8 : 0) +
+      (language.startsWith('es-mx-') ? 4 : 0) +
+      (NATURAL_VOICE_PATTERN.test(name) ? 2 : 0) +
+      (voice.localService ? 1 : 0)
+    );
   }
 }
