@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CardHistoryComponent } from './components/card-history/card-history.component';
+import { CountdownOverlayComponent } from './components/countdown-overlay/countdown-overlay.component';
 import { CurrentCardComponent } from './components/current-card/current-card.component';
 import { EndBannerComponent } from './components/end-banner/end-banner.component';
 import { GameControlsComponent } from './components/game-controls/game-controls.component';
@@ -10,6 +11,7 @@ import { GameService } from '../../core/services/game.service';
   selector: 'app-game-page',
   imports: [
     CardHistoryComponent,
+    CountdownOverlayComponent,
     CurrentCardComponent,
     GameControlsComponent,
     SettingsSheetComponent,

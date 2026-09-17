@@ -18,6 +18,8 @@ export class GameControlsComponent {
     switch (this.game.status()) {
       case 'running':
         return 'Pausar';
+      case 'countdown':
+        return 'Preparados…';
       case 'paused':
       case 'finished':
         return 'Continuar';

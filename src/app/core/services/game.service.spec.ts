@@ -119,4 +119,84 @@ describe('GameService', () => {
 
     expect(game.drawnCount()).toBe(total);
   });
+
+  it('starts with a countdown from idle before drawing', () => {
+    vi.useFakeTimers();
+    const game = configureGame();
+
+    game.startAuto();
+
+    expect(game.status()).toBe('countdown');
+    expect(game.countdown()).toBe(3);
+    expect(game.drawnCount()).toBe(0);
+
+    vi.advanceTimersByTime(1000);
+    expect(game.countdown()).toBe(2);
+
+    vi.advanceTimersByTime(1000);
+    expect(game.countdown()).toBe(1);
+
+    vi.advanceTimersByTime(1000);
+    expect(game.countdown()).toBe(0);
+
+    vi.advanceTimersByTime(900);
+    expect(game.countdown()).toBeNull();
+    expect(game.status()).toBe('running');
+    expect(game.drawnCount()).toBe(1);
+
+    vi.useRealTimers();
+  });
+
+  it('resumes from paused without a countdown', () => {
+    vi.useFakeTimers();
+    const game = configureGame();
+
+    game.drawNext();
+    expect(game.status()).toBe('paused');
+
+    game.startAuto();
+    expect(game.countdown()).toBeNull();
+    expect(game.status()).toBe('running');
+    expect(game.drawnCount()).toBe(2);
+
+    vi.useRealTimers();
+  });
+
+  it('cancels countdown when paused', () => {
+    vi.useFakeTimers();
+    const game = configureGame();
+
+    game.startAuto();
+    expect(game.status()).toBe('countdown');
+
+    game.pause();
+    expect(game.countdown()).toBeNull();
+    expect(game.status()).toBe('idle');
+
+    vi.advanceTimersByTime(5000);
+    expect(game.drawnCount()).toBe(0);
+
+    vi.useRealTimers();
+  });
+
+  it('announces each countdown step when voice is enabled', () => {
+    vi.useFakeTimers();
+    const game = configureGame();
+    const speechService = TestBed.inject(SpeechService);
+    const announceSpy = vi.spyOn(speechService, 'announce');
+
+    game.startAuto();
+    expect(announceSpy).toHaveBeenLastCalledWith('Tres');
+
+    vi.advanceTimersByTime(1000);
+    expect(announceSpy).toHaveBeenLastCalledWith('Dos');
+
+    vi.advanceTimersByTime(1000);
+    expect(announceSpy).toHaveBeenLastCalledWith('Uno');
+
+    vi.advanceTimersByTime(1000);
+    expect(announceSpy).toHaveBeenLastCalledWith('¡Ya!');
+
+    vi.useRealTimers();
+  });
 });

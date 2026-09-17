@@ -6,7 +6,11 @@ import { shuffle } from '../utils/shuffle';
 import { SettingsService } from './settings.service';
 import { SpeechService } from './speech.service';
 
-export type GameStatus = 'idle' | 'running' | 'paused' | 'finished';
+export type GameStatus = 'idle' | 'countdown' | 'running' | 'paused' | 'finished';
+
+const COUNTDOWN_FROM = 3;
+const COUNTDOWN_STEP_MS = 1000;
+const COUNTDOWN_GO_MS = 900;
 
 @Service()
 export class GameService {
@@ -18,9 +22,11 @@ export class GameService {
   readonly queue = signal<Card[]>([]);
   readonly history = signal<Card[]>([]);
   readonly isRunning = signal(false);
+  readonly countdown = signal<number | null>(null);
 
   readonly status = computed<GameStatus>(() => {
     if (this.isFinished()) return 'finished';
+    if (this.countdown() !== null) return 'countdown';
     if (this.isRunning()) return 'running';
     if (this.history().length === 0) return 'idle';
     return 'paused';
@@ -72,7 +78,13 @@ export class GameService {
   }
 
   startAuto(): void {
-    if (this.isFinished()) return;
+    if (this.isFinished() || this.countdown() !== null) return;
+
+    if (this.status() === 'idle') {
+      this.beginCountdown();
+      return;
+    }
+
     this.isRunning.set(true);
     this.drawNext();
   }
@@ -80,9 +92,11 @@ export class GameService {
   pause(): void {
     this.isRunning.set(false);
     this.clearTimer();
+    this.countdown.set(null);
   }
 
   drawNext(): void {
+    if (this.countdown() !== null) return;
     if (this.isFinished()) return;
 
     const pending = this.queue();
@@ -149,6 +163,52 @@ export class GameService {
     if (this.timerId) {
       clearTimeout(this.timerId);
       this.timerId = null;
+    }
+  }
+
+  private beginCountdown(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      this.isRunning.set(true);
+      this.drawNext();
+      return;
+    }
+
+    this.countdown.set(COUNTDOWN_FROM);
+    this.announceCountdown(COUNTDOWN_FROM);
+    this.scheduleCountdownTick();
+  }
+
+  private scheduleCountdownTick(): void {
+    this.clearTimer();
+    const value = this.countdown();
+    const delay = value === 0 ? COUNTDOWN_GO_MS : COUNTDOWN_STEP_MS;
+    this.timerId = setTimeout(() => {
+      this.countdownTick();
+    }, delay);
+  }
+
+  private countdownTick(): void {
+    const value = this.countdown();
+    if (value === null) return;
+
+    if (value > 0) {
+      const next = value - 1;
+      this.countdown.set(next);
+      this.announceCountdown(next);
+      this.scheduleCountdownTick();
+    } else {
+      this.countdown.set(null);
+      this.isRunning.set(true);
+      this.drawNext();
+    }
+  }
+
+  private announceCountdown(value: number): void {
+    if (!this.settingsService.settings().voiceEnabled) return;
+    const words: Record<number, string> = { 3: 'Tres', 2: 'Dos', 1: 'Uno' };
+    const text = value === 0 ? '¡Ya!' : words[value];
+    if (text) {
+      this.speechService.announce(text);
     }
   }
 }

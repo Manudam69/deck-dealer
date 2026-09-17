@@ -18,6 +18,8 @@ export class CurrentCardComponent {
     switch (this.game.status()) {
       case 'running':
         return 'Pausar';
+      case 'countdown':
+        return 'Preparados…';
       case 'paused':
         return 'Continuar';
       case 'finished':
