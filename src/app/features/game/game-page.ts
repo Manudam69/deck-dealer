@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { CardHistoryComponent } from './components/card-history/card-history.component';
 import { CountdownOverlayComponent } from './components/countdown-overlay/countdown-overlay.component';
 import { CurrentCardComponent } from './components/current-card/current-card.component';
