@@ -5,6 +5,7 @@ import { vi } from 'vitest';
 import { GameService } from './game.service';
 import { SettingsService } from './settings.service';
 import { SpeechService } from './speech.service';
+import { WakeLockService } from './wake-lock.service';
 
 @Component({
   selector: 'app-game-test',
@@ -45,6 +46,13 @@ describe('GameService', () => {
         SettingsService,
         SpeechService,
         GameService,
+        {
+          provide: WakeLockService,
+          useValue: {
+            request: vi.fn().mockResolvedValue(undefined),
+            release: vi.fn().mockResolvedValue(undefined),
+          },
+        },
         { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     });
@@ -160,6 +168,19 @@ describe('GameService', () => {
     expect(game.drawnCount()).toBe(2);
 
     vi.useRealTimers();
+  });
+
+  it('keeps the screen awake while automatic drawing is active', () => {
+    const game = configureGame();
+    const wakeLockService = TestBed.inject(WakeLockService);
+    vi.mocked(wakeLockService.request).mockClear();
+    vi.mocked(wakeLockService.release).mockClear();
+
+    game.startAuto();
+    expect(wakeLockService.request).toHaveBeenCalledOnce();
+
+    game.pause();
+    expect(wakeLockService.release).toHaveBeenCalledOnce();
   });
 
   it('cancels countdown when paused', () => {

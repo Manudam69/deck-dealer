@@ -5,6 +5,7 @@ import type { Card, Deck } from '../models/card.model';
 import { shuffle } from '../utils/shuffle';
 import { SettingsService } from './settings.service';
 import { SpeechService } from './speech.service';
+import { WakeLockService } from './wake-lock.service';
 
 export type GameStatus = 'idle' | 'countdown' | 'running' | 'paused' | 'finished';
 
@@ -16,6 +17,7 @@ const COUNTDOWN_GO_MS = 900;
 export class GameService {
   private readonly settingsService = inject(SettingsService);
   private readonly speechService = inject(SpeechService);
+  private readonly wakeLockService = inject(WakeLockService);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly deck = signal<Deck | undefined>(undefined);
@@ -80,6 +82,8 @@ export class GameService {
   startAuto(): void {
     if (this.isFinished() || this.countdown() !== null) return;
 
+    void this.wakeLockService.request();
+
     if (this.status() === 'idle') {
       this.beginCountdown();
       return;
@@ -93,6 +97,7 @@ export class GameService {
     this.isRunning.set(false);
     this.clearTimer();
     this.countdown.set(null);
+    void this.wakeLockService.release();
   }
 
   drawNext(): void {
